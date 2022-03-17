@@ -17,6 +17,7 @@ find_package(catkin
     sensor_msgs
     trajectory_msgs
     message_generation
+    std_srvs
 ##  additional packages
 )
 
@@ -61,14 +62,10 @@ add_message_files(
 add_service_files(
   FILES
 #    WSG50Disconnect.srv
-    clearSoftLimits.srv
     setAcceleration.srv
     setForceLimit.srv
     setSoftLimits.srv
     tareForceSensor.srv
-    stop.srv
-    fastStop.srv
-    ackFastStop.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
