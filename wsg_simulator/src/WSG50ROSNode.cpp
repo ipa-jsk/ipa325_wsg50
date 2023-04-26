@@ -43,6 +43,7 @@
 
 // Gripper Default Values
 //
+#define MAXWIDTH 110.0 
 #define FORCELIMIT 10    // in Newton
 #define ACCELERATION 200 // in mm/s²
 
@@ -118,7 +119,6 @@ public:
         homingserver_.start();
     }
 
-
     // homing action
     void doHoming()
     {
@@ -136,12 +136,11 @@ public:
         {
             this->homingserver_.setSucceeded(this->result_);
         }
-        else{
+        else
+        {
             this->homingserver_.setAborted(this->result_);
         }
     }
-
-    
 };
 
 /*
@@ -199,7 +198,6 @@ public:
             this->prepositionserver_.setAborted(this->result_);
         }
     }
-
 };
 
 /*
@@ -242,8 +240,6 @@ public:
             this->gpserver_.setAborted(res_);
         }
     }
-
-    
 };
 
 /*
@@ -276,7 +272,7 @@ public:
         speed_ = goal->speed;
         if (DEBUG)
             ROS_INFO("Release Part Action called with following params: width = %f, speed = %f", width_, speed_);
-        
+
         bool success = _controller->release(width_, speed_);
         if (success)
         {
@@ -287,7 +283,6 @@ public:
             this->rpserver_.setAborted(res_);
         }
     }
-
 };
 
 /*
@@ -305,7 +300,6 @@ void publishStates(const std::string &jointName, const std::string &openingJoint
     //
     ros::Rate r(PUBLISHINGINTERVAL);
 
-
     // define publishers
     //
     ipa325_wsg50::systState systStateMsg;
@@ -314,7 +308,7 @@ void publishStates(const std::string &jointName, const std::string &openingJoint
 
     // start publishing loop
     //
-    while ( //ros::ok() &&
+    while ( // ros::ok() &&
         g_active)
     {
 
@@ -358,19 +352,19 @@ void publishStates(const std::string &jointName, const std::string &openingJoint
         sensor_msgs::JointState jointStateMsg;
         jointStateMsg.header.stamp = ros::Time::now();
         jointStateMsg.name.push_back(jointName);
-        //the gripper returns the total opening but we need the value of
-        //a single finger. This can then be combined with a mimic joint for
-        //the second finger
+        // the gripper returns the total opening but we need the value of
+        // a single finger. This can then be combined with a mimic joint for
+        // the second finger
         jointStateMsg.position.push_back(systStateMsg.width / 1000.0 / 2.0);
         jointStateMsg.velocity.push_back(systStateMsg.speed / 1000.0);
         jointStateMsg.effort.push_back(systStateMsg.force / 1000.0);
 
-        //alternatively you can also use the full gripper opening
-        // should not be published as joint state, since there is no joint with this state. Use systStateMsg if you need full opening.
-        // jointStateMsg.name.push_back(openingJointName);
-        // jointStateMsg.position.push_back(systStateMsg.width/1000.0);
-        // jointStateMsg.velocity.push_back(systStateMsg.speed/1000.0);
-        // jointStateMsg.effort.push_back(systStateMsg.force/1000.0);
+        // alternatively you can also use the full gripper opening
+        //  should not be published as joint state, since there is no joint with this state. Use systStateMsg if you need full opening.
+        //  jointStateMsg.name.push_back(openingJointName);
+        //  jointStateMsg.position.push_back(systStateMsg.width/1000.0);
+        //  jointStateMsg.velocity.push_back(systStateMsg.speed/1000.0);
+        //  jointStateMsg.effort.push_back(systStateMsg.force/1000.0);
 
         jointStatePublisher.publish(jointStateMsg);
 
@@ -529,11 +523,13 @@ int main(int argc, char **argv)
     //
     std::string ip, port;
     std::string jointName, openingJointName;
+    double max_width;
     ros::param::param<std::string>("~joint_name", jointName, DEFAULTJOINTNAME);
     ros::param::param<std::string>("~opening_joint_name", openingJointName, DEFAULTOPENINGJOINTNAME);
+    ros::param::param<double>("~max_width", max_width, MAXWIDTH);
     try
     {
-        _controller = new WSG50Simulator();
+        _controller = new WSG50Simulator(max_width);
     }
     catch (int e)
     {

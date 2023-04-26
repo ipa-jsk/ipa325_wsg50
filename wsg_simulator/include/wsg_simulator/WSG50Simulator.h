@@ -1,8 +1,8 @@
 #include <WSG50Controller.h>
 
-#ifndef MAXWIDTH
-#define MAXWIDTH 110.0
-#endif
+// #ifndef MAXWIDTH
+// #define MAXWIDTH 110.0 -> use parameter instead to allow using wsg50-210 as well
+// #endif
 
 #ifndef MINWIDTH
 #define MINWIDTH 0.0
@@ -50,7 +50,7 @@ class WSG50Simulator
 public:
     // Connection Manager
     //
-    WSG50Simulator();
+    WSG50Simulator(double max_width);
     virtual ~WSG50Simulator(void);
 
     /**

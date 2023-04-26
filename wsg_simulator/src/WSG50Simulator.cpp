@@ -6,12 +6,12 @@
 /*
  *  Constructor
  */
-WSG50Simulator::WSG50Simulator(void)
+WSG50Simulator::WSG50Simulator(double max_width)
 {
     this->_currentOpeningWidth = 0;
     this->_currentSpeed = 0;
     this->_currentGraspingState = 0;
-    this->_MaxWidth = MAXWIDTH;
+    this->_MaxWidth = max_width;
     this->_MinWidth = MINWIDTH;
     this->_MaxSpeed = MAXSPEED;
     this->_MinSpeed = MINSPEED;
@@ -20,7 +20,7 @@ WSG50Simulator::WSG50Simulator(void)
     this->_MaxForceLimit = MAXFORCELIMIT;
     this->_MinForceLimit = MINFORCELIMIT;
     this->_softLimitMinus = MINWIDTH;
-    this->_softLimitPlus = MAXWIDTH;
+    this->_softLimitPlus = this->_MaxWidth;
     this->_acceleration = DEFAULTACCELERATION; // mm/s²
     this->_speed = DEFAULTSPEED;               // mm/s
     this->_forceLimit = DEFAULTFORCELIMIT;     // N
@@ -92,7 +92,7 @@ bool WSG50Simulator::homing(unsigned int direction)
     // move to max./ min width
     if (direction == 1)
     {
-        return moveToPosition(MAXWIDTH, 30);
+        return moveToPosition(this->_MaxWidth, 30);
     }
     else
     {
@@ -175,6 +175,7 @@ bool WSG50Simulator::release(float openWidth, float speed)
     setGraspingState(5);
     bool success =  moveToPosition(openWidth, speed);
     setGraspingState(0);
+    return true;
 }
 
 void WSG50Simulator::setGraspingState(int i)
